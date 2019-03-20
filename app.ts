@@ -8,6 +8,7 @@ class Voiture {
     private consomation: number = 20
     private status: string
     private start: number = 0
+    private essenceConsommer: number = 0
 
     constructor(
         marque: string,
@@ -50,25 +51,24 @@ class Voiture {
     }
 
     public updateReservoir(): void {
-        let essenceConsommer: number = 0
         if (this.reservoir <= 0) {
             console.log("vous n'avez plus d'essence")
             this.status = 'arreter'
         }
         if (this.status === 'demarer') {
-            essenceConsommer =
-                essenceConsommer > this.reservoir
-                    ? (essenceConsommer = this.reservoir)
-                    : (essenceConsommer = Math.round(
+            this.essenceConsommer =
+                this.essenceConsommer > this.reservoir
+                    ? (this.essenceConsommer = this.reservoir)
+                    : (this.essenceConsommer = Math.round(
                           ((Date.now() - this.start) * this.consomation) / 1000
                       ))
             console.log(
                 'essence consommer: ',
-                essenceConsommer,
+                this.essenceConsommer,
                 'essence restant: ',
                 this.reservoir
             )
-            this.reservoir = this.reservoir - essenceConsommer
+            this.reservoir = this.reservoir - this.essenceConsommer
         }
     }
     public testReservoir(): void {
@@ -76,9 +76,7 @@ class Voiture {
             const key = readlineSync.question(
                 'Tapez sur entrer pour voir la consomation de votre carburant: '
             )
-            if (this.reservoir) {
-                this.updateReservoir()
-            }
+            this.updateReservoir()
             if (key === 'a') {
                 console.log(this.reservoir)
             }
