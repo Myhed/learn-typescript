@@ -1,8 +1,4 @@
-interface Istate<T, U> {
-    readonly status?: T
-    readonly reservoir?: U
-    message?: string
-}
+import * as readlineSync from 'readline-sync'
 class Voiture {
     private marque: string
     private model: string
@@ -10,8 +6,8 @@ class Voiture {
     private reservoir: number
     private capaciteMax: number
     private consomation: number = 20
-    private temps: number = 1000
     private status: string
+    private start: number = 0
 
     constructor(
         marque: string,
@@ -53,38 +49,68 @@ class Voiture {
         }
     }
 
-    public demarer(): Istate<string, number> {
-        if (this.reservoir === 0 && this.status === 'demarer') {
-            this.status = 'arrêt'
-            return {
-                message: "Vous n'avez plus d'essence",
-                status: this.status,
-            }
-        } else {
-            this.status = 'demarer'
+    public updateReservoir(): void {
+        let essenceConsommer: number = 0
+        if (this.reservoir <= 0) {
+            console.log("vous n'avez plus d'essence")
+            this.status = 'arreter'
         }
-        return { status: this.status, reservoir: this.reservoir }
+        if (this.status === 'demarer') {
+            essenceConsommer =
+                essenceConsommer > this.reservoir
+                    ? (essenceConsommer = this.reservoir)
+                    : (essenceConsommer = Math.round(
+                          ((Date.now() - this.start) * this.consomation) / 1000
+                      ))
+            console.log(
+                'essence consommer: ',
+                essenceConsommer,
+                'essence restant: ',
+                this.reservoir
+            )
+            this.reservoir = this.reservoir - essenceConsommer
+        }
+    }
+    public testReservoir(): void {
+        while (this.status === 'demarer') {
+            const key = readlineSync.question(
+                'Tapez sur entrer pour voir la consomation de votre carburant: '
+            )
+            if (this.reservoir) {
+                this.updateReservoir()
+            }
+            if (key === 'a') {
+                console.log(this.reservoir)
+            }
+        }
+    }
+    public demarer(): void | string {
+        if (this.reservoir === 0) {
+            return "Vous n'avez pas d'essence"
+        } else if (this.status === 'demarer') {
+            return 'Vous êtes déjà en démarage'
+        }
+        this.start = Date.now()
+        this.status = 'demarer'
     }
 }
 
-const mavoiture = new Voiture('Peugeot', '308', 'Rouge', 70000)
+const mavoiture = new Voiture('Peugeot', '308', 'Rouge', 2000)
 
 // console.log("Première Voiture: ", mavoiture);
 // console.log("coueleur:", mavoiture.getCouleur);
 // console.log("Le reservoir est vide: ", mavoiture.getReservoir);
-mavoiture.setReservoir = 20
+//mavoiture.setReservoir = 20
 // console.log("On a ajouter: ", mavoiture.getReservoir, "au reservoir");
-mavoiture.setReservoir = 100
+//mavoiture.setReservoir = 100
 // console.log("Le reservoire reste a : ", mavoiture.getReservoir, "parce que on a essayer d ajouter 100");
-mavoiture.setReservoir = 30
+//mavoiture.setReservoir = 30
 // console.log("on ajoute 30 au reservoir le total est : ", mavoiture.getReservoir);
 
 // console.log("on fait le plein", mavoiture.fairePlein());
 
 // console.log("on a fait le pleins le reservoir doit être à", mavoiture.getReservoir);
 
-async function main() {
-    // console.log(await mavoiture.demarer());
-    // console.log(await mavoiture.demarer());
-}
-// main();
+mavoiture.fairePlein()
+mavoiture.demarer()
+mavoiture.testReservoir()

@@ -14,5 +14,12 @@
   "devDependencies": {
     "prettier": "^1.16.4",
     "tslint-plugin-prettier": "^2.0.1"
+  },
+  "dependencies": {
+    "@types/keypress": "^2.0.30",
+    "@types/node": "^11.11.4",
+    "@types/readline-sync": "^1.4.3",
+    "keypress": "^0.2.1",
+    "readline-sync": "^1.4.9"
   }
 }
